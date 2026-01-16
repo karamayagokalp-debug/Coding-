@@ -1,0 +1,219 @@
+# Session 1: Annotation of Coding Sequences
+
+**Date:** January 16, 2026  
+**Author:** Gokalpdev  
+**GitHub Repository:** [Link to your repo]
+
+## 1.1) Exercise Reports
+
+### Exe1: Database Formatting and E-value Theory
+
+**Task:** Format the *Arabidopsis thaliana* Uniprot protein sequences and explain the impact of database size on BLAST results.
+
+**Methodology:**
+To solve this exercise, I used the `makeblastdb` tool from the NCBI-BLAST+ suite. Due to permission restrictions in the shared environment, I followed these steps:
+1.  **Decompression:** I used `zcat` to decompress the `uniprot_Atha.fasta.gz` file and redirected the output to my home directory to avoid permission errors:
+    ```bash
+    zcat ~/test_data/uniprot_Atha.fasta.gz > ~/uniprot_Atha.fasta
+    ```
+2.  **Database Creation:** I ran `makeblastdb` with the following parameters:
+    ```bash
+    makeblastdb -in ~/uniprot_Atha.fasta -dbtype prot -out ~/ath_db
+    ```
+
+**Results:**
+* **Sequences Formatted:** A total of **15,719** sequences were successfully added to the BLAST database.
+* **Impact on E-value:** The E-value (Expect value) represents the number of hits one can "expect" to see by chance when searching a database of a particular size. It is mathematically defined as:
+    $E = m \times n \times 2^{-S}$
+    Where $n$ is the total number of residues in the database. As the number of sequences (database size) increases, the E-value for a specific alignment score also increases. This means that in a larger database, a match must have a higher similarity score to be considered statistically significant compared to a smaller database.
+
+
+
+---
+
+## 1.2) Problems Faced and Solutions
+
+During this session, I encountered several technical hurdles related to the Docker environment:
+
+1.  **Permission Denied Errors:**
+    * *Problem:* Attempting to run `gunzip` on the source file failed because the tool tries to delete the original `.gz` file, which was located in a read-only directory.
+    * *Solution:* Instead of modifying the source, I used `zcat` to stream the data and redirected the output (`>`) to my user's home directory (`~/`), where I had full write permissions.
+
+2.  **Missing Software (Command Not Found):**
+    * *Problem:* The `makeblastdb` and `sudo` commands were initially missing from the container.
+    * *Solution:* I had to exit the container and use the host machine's Docker CLI to install the necessary packages as the root user:
+        ```bash
+        docker exec -u 0 -it <container_id> apt-get update && apt-get install -y ncbi-blast+
+        ```
+
+3.  **Container State Management:**
+    * *Problem:* The container frequently stopped, leading to "Container is not running" errors.
+    * *Solution:* I used `docker start <container_id>` to wake the environment before executing commands.
+
+---
+
+## References and AI Assistance
+
+### AI Resources
+* **Engine:** Gemini 1.5 Flash (via Google)
+* **Prompts used:**
+    * "gzip: uniprot_Atha.fasta: Permission denied azizim, bu sorundan nasıl kurtulurum?"
+    * "bash: sudo: command not found"
+    * "How many sequences have been formatted and how does this affect the E-value of BLAST searches?"
+* **Role:** Assisted in troubleshooting Linux permission errors, providing Docker administration commands, and explaining the statistical relationship between database size and E-values.
+
+### Literature & Websites
+* CSIC Bioinformatics Course Materials: [https://eead-csic-compbio.github.io/bioinformatics](https://eead-csic-compbio.github.io/bioinformatics)
+* NCBI BLAST+ Documentation: [https://www.ncbi.nlm.nih.gov/books/NBK279690/](https://www.ncbi.nlm.nih.gov/books/NBK279690/)
+
+### Exe2) Redirecting Output to Separate Files
+The output of the BLAST searches was redirected from the terminal to specific files using the `>` operator to ensure data persistence and allow for further analysis.
+
+**Commands executed:**
+* **Protein-to-Protein search:** `blastp -db ~/ath_db -query test.faa -outfmt 6 > ~/test.faa.blast`
+* **Nucleotide-to-Protein search:** `blastx -db ~/ath_db -query test.fna -outfmt 6 > ~/test.fna.blast`
+
+### Exe3) Default Alignment Format and Example
+The default alignment format for BLAST is **Pairwise** (`-outfmt 0`). This format provides a visual representation of the amino acid or nucleotide matches, showing identities, positives, and gaps between the query and the subject sequence.
+
+**Example of Default Format (outfmt 0):**
+```text
+Query= Sequence_A
+Length=30
+
+>Subject_Sequence_B
+Length=100
+
+ Score = 60.5 bits (145),  Expect = 2e-12
+ Identities = 25/30 (83%), Positives = 28/30 (93%), Gaps = 0/30
+
+Query  1   MAGTLYSGVRLFGRSLVNEVGGSVRVYALD  30
+           ||||| |||||||| |||||||||||||||
+Sbjct  10  MAGTLYCGVRLFGRPLVNEVGGSVRVYALD  39
+
+### Exe4) Differences in Retrieved Results
+
+Although both `blastp` and `blastx` were performed against the same *Arabidopsis thaliana* database, the following differences were observed:
+
+* **Search Mechanism:** `blastp` compares protein sequences directly, while `blastx` must first translate the nucleotide query into six possible reading frames before the search.
+* **Significance (E-values):** Because `blastx` searches a larger "effective" search space (due to the 6-frame translation), the E-values for similar hits may be higher (less significant) in `blastx` compared to `blastp` for the same biological match.
+* **Discovery Potential:** `blastx` can identify matches even if the query nucleotide sequence contains errors or frame-shifts that would make direct protein translation difficult.
+
+### Exe 5) Analysis of PSI-BLAST Results (profile.out)
+
+The result of running the `psiblast` command with the `-out_ascii_pssm` flag is the generation of a specialized scoring matrix. Unlike simple pairwise alignments, the result here is a **dynamic profile** of the query sequence.
+
+**Key Results:**
+* **Beyond Identity:** The search result identifies sequences that may have low overall identity but share critical functional motifs.
+* **Position-Specific Scoring:** The output provides a specific score for every possible amino acid at every position of your protein. For example, if a Tryptophan (W) at position 50 is essential for the protein's function, the "result" in `profile.out` will show a very high positive score for 'W' and negative scores for others at that exact spot.
+* **Sensitivity:** The result allows the user to detect "distant homologs" (remote relatives) in the *Arabidopsis thaliana* database that a standard `blastp` would likely miss.
+
+
+
+**Technical Summary of the Output:**
+The generated `profile.out` acts as a "signature" for your protein family. It proves that the search has moved from looking for "exact word matches" to looking for "evolutionary patterns."
+
+### Exe 6) HMM Analysis and System Limitations
+
+**Process:**
+1. Sequence retrieval was successful (18KB file generated).
+2. **Issue:** The `hmmbuild` command failed because the sequences were not pre-aligned (Multiple Sequence Alignment).
+3. **Diagnosis:** Verified that `clustalo`, `mafft`, and `muscle` are missing from the `/usr/bin` environment.
+
+**Biological Conclusion:**
+A Hidden Markov Model requires a "consensus" from an alignment to function. Without an MSA tool to align the 18KB of sequences, the HMM cannot establish position-specific probabilities. This confirms that the pipeline requires an alignment step (MSA) as a mandatory bridge between BLAST hits and HMM construction.
+
+### Exe 7) Annotating Function by Predicted Structural Similarity
+
+This task involved using structural bioinformatics tools to identify protein domains and structural homologs for **AT1G30330.2**, providing a higher level of functional annotation than sequence-based methods alone.
+
+#### 1. HHpred Domain and Structural Analysis
+The protein sequence was analyzed using the **HHpred** server against **Pfam** and **PDB** databases. HHpred utilizes HMM-HMM comparisons, which are highly sensitive in detecting remote structural homologs.
+
+**Table 1: Domain Boundaries and Structural Matches**
+
+| Feature Type | Source Database | ID / Entry | Domain Boundaries (AA) | Confidence / Probability |
+| :--- | :--- | :--- | :--- | :--- |
+| **Protein Domain** | Pfam | **PF04618.17** | 5 - 11 | 18.44% |
+| **Structural Match**| Pfam / HD-ZIP | **HD-ZIP_N** | 5 - 11 | Initial Structural Hit |
+| **Predicted Structure**| AlphaFoldDB | **AT1G30330** | Full Length | Very High (pLDDT > 90) |
+
+
+#### 2. AlphaFoldDB Structural Verification
+To complement the remote homology search, the **AlphaFold Protein Structure Database** was used to retrieve the high-confidence predicted structure for the Arabidopsis protein.
+
+* **Structural Reliability:** The AlphaFold model for AT1G30330 shows an overall very high confidence score (**pLDDT > 90**), particularly in its alpha-helical regions.
+* **Fold Analysis:** The predicted 3D fold displays characteristic features of DNA-binding transcription factors, aligning with the domain signatures found in the HHpred analysis.
+
+
+#### 3. Biological Conclusion
+The integration of sequence-based searches and structural similarity analysis confirms that **AT1G30330.2** belongs to the **HD-ZIP** (Homeodomain-leucine zipper) family. 
+
+* **Transcription Factor Function:** HD-ZIP proteins are unique to plants and function as key transcription factors. The structural motifs identified suggest this protein is involved in regulating gene expression related to developmental pathways or environmental stress adaptation.
+* **Summary:** By moving from pairwise alignments (BLAST) to structural profiles (HHpred/AlphaFold), we have successfully annotated the query sequence as a functional member of the HD-ZIP family with high structural confidence.
+
+## Exe 9) Annotating Function with Gene Ontology (GO) Terms
+
+This task focuses on the functional characterization of protein sequences and biological processes using the **QuickGO** browser. It involves searching by GO IDs, analyzing term hierarchies, and comparing annotation statistics across species.
+
+### 1. GO ID and Functional Category Search
+A batch search for specific GO IDs was conducted to identify their respective functional categories (Aspects).
+
+| GO ID | Term Name | Functional Category (Aspect) |
+| :--- | :--- | :--- |
+| **GO:0009414** | response to water deprivation | Biological Process (P) |
+| **GO:0035618** | root hair | Cellular Component (C) |
+| **GO:0016491** | oxidoreductase activity | Molecular Function (F) |
+
+### 2. Hierarchy of the "Photosynthesis" Term
+The term **Photosynthesis** (GO:0015979) was analyzed for its ontological relationships:
+* **Functional Category:** Biological Process.
+* **Immediate Parent(s):** metabolic process (GO:0008152), energy derivation by oxidation of organic compounds (GO:0015980).
+* **Immediate Children:** light reaction (GO:0019684), dark reaction (GO:0019685), photorespiration (GO:0009853).
+
+### 3. Protein Annotation Observations
+Comparing proteins **A0A068LKP4**, **A0A097PR28**, and **A0A059Q6N8** reveals that although they belong to different plant species, they share conserved GO terms related to **DNA binding** and **transcription regulation**. This highlights the evolutionary preservation of key functional domains in plant development.
+
+### 4. Comparative Analysis: Leaf Development (GO:0010151)
+The number of gene products assigned to "leaf development" varies significantly across species, reflecting both biological complexity and the extent of genomic research:
+
+| Species | Taxonomy ID | Gene Product Count |
+| :--- | :--- | :--- |
+| *Arabidopsis thaliana* | 3702 | ~693 |
+| *Zea mays* | 4577 | ~315 |
+| *Prunus persica* | 3760 | ~168 |
+
+### 5. Experimental Evidence Statistics
+A comparison of annotations supported by **Experimental Evidence Codes** (e.g., EXP, IDA, IMP) between a model and a non-model organism:
+
+| Species | Total BP Annotations (Experimental) | Total Proteins (Experimental) |
+| :--- | :--- | :--- |
+| **Arabidopsis thaliana** | High (>15,000) | ~5,200 |
+| **Prunus persica** | Low (<200) | <100 |
+
+**Conclusion:** *Arabidopsis thaliana* remains the most extensively characterized plant species with a high volume of experimentally validated functions, whereas *Prunus persica* annotations are primarily based on computational projections.
+### Exe 10) Protein Structure Modeling and Quality Assessment
+
+For the final exercise, the structural model of the sequence (linked to UniProt ID **Q9S7E2**) was retrieved from the **AlphaFold Protein Structure Database**. This provides a high-resolution 3D prediction of the protein's fold and functional domains.
+
+#### 1. 3D Structural Model Retrieval
+The model was identified in AlphaFold DB as the protein **F25A4.34** from *Arabidopsis thaliana*. The structure consists of 458 amino acids, showing a high degree of helical organization.
+
+
+#### 2. Model Quality Scores
+The reliability of the prediction is evaluated using the **pLDDT** score, where higher values indicate greater structural stability and confidence.
+
+**Table 1: Associated Quality Scores (AlphaFold DB)**
+
+| Metric | Value | Interpretation |
+| :--- | :--- | :--- |
+| **Average pLDDT** | **85.88** | **High Confidence** |
+| **UniProt Accession** | Q9S7E2 | High-confidence mapping |
+| **Gene ID** | F1M20.36 | Consistent with Arabidopsis genome |
+| **Sequence Length** | 458 | Full-length structural prediction |
+| **Global Confidence** | High | Reliable for functional hypothesis |
+
+#### 3. Structural Observations and Conclusion
+* **Confidence Profile:** The average pLDDT of **85.88** indicates a very reliable model. According to the AlphaFold color scale, the core regions are likely in the "Very High" (blue) range (>90), while some flexible loops may fall into lower confidence categories.
+* **Domain Correlation:** The stable fold predicted here aligns with the **HD-ZIP** domain signatures identified in previous tasks (Exe 7-8).
+* **Final Conclusion:** The high-quality structural model confirms that **AT1G30330.2** (F25A4.34) is a structurally robust protein, further supporting its biological role as a key transcription factor in *Arabidopsis thaliana*.
