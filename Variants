@@ -1,0 +1,98 @@
+# Session 5: Mapping and Variant Calling
+
+## 5.1 Exercise Solutions
+
+### Exe 1: Quality Control Analysis
+
+**1.1 Why are there two FASTQ files with the same name but different numeric suffixes (_1 and _2)?**
+The presence of two files indicates that the data was generated using **paired-end sequencing**. 
+* `SAMEA2569438.chr10_1.fastq.gz` contains the **Forward** reads (R1).
+* `SAMEA2569438.chr10_2.fastq.gz` contains the **Reverse** reads (R2).
+Paired-end sequencing is crucial for accurate mapping and identifying structural variants, as it provides information from both ends of the DNA fragments.
+
+**1.2 Comparison of the files and identification of the FASTQ format**
+After examining both `SAMEA2569438.chr10_1` and `_2` via FastQC:
+* **The Difference:** Both files contain exactly **5,321,202 total sequences**, but they represent different orientations of the DNA fragments. The primary difference lies in the base sequences and their corresponding quality scores for each pair.
+* **FASTQ Format:** These files follow the standard 4-line FASTQ format:
+    1. **Identifier Line:** Starts with `@` (e.g., `@ERR.../1` and `@ERR.../2`).
+    2. **Sequence Line:** The actual nucleotide sequence (A, T, G, C, N).
+    3. **Separator Line:** Starts with `+`.
+    4. **Quality Line:** Phred quality scores encoded in ASCII characters.
+
+**1.3 Are read starts and ends similar in terms of error rate?**
+Based on the **"Per base sequence quality"** module in the provided HTML reports:
+* **Read Starts:** The quality scores at the beginning of the reads (positions 1-10) are extremely high and stable (Phred scores > 35).
+* **Read Ends:** While the quality remains well within the "green" safety zone (Phred scores > 30) for both files, there is a **very slight, typical decline** in quality towards the end of the 101 bp sequences.
+* **Conclusion:** The error rate is remarkably low for both ends. However, as is typical in Illumina sequencing, the ends of the reads show a marginally higher probability of error compared to the starts due to the gradual decay of the sequencing reagents over 101 cycles.
+
+### Exe 2: Read Mapping (Alignment)
+I performed the alignment against the reference genome using the `BWA MEM` algorithm.
+
+**Command executed:**
+fastqc /home/vep/variant_data/*.fastq.gz -o /data
+cd vep_data     
+firefox SAMEA2569438.chr10_1_fastqc.html SAMEA2569438.chr10_2_fastqc.html
+
+### Exercise 2.1: Comparison of Alignment File Sizes
+
+After generating the alignment files in different formats, I compared their sizes using the `ls -lh` command to evaluate storage efficiency.
+
+**Terminal Output:**
+```bash
+-rw-r--r-- 1 vep vep  32M Jan 16 22:05 SAMEA2569438.chr10.bam
+-rw-r--r-- 1 vep vep  13M Jan 16 22:05 SAMEA2569438.chr10.cram
+
+### Exercise 3.1: Estimating Coverage Depth Percentage on chr10
+
+In this exercise, I calculated the percentage of chromosome 10 that has a sequencing depth greater than 100x.
+
+**Methodology:**
+I used the `samtools mpileup` command to process the alignment and filtered the output using `awk` to count the positions meeting the depth criteria. The 4th column in the mpileup output represents the read depth at each genomic position.
+
+**Commands and Results:**
+1. To count positions with a depth greater than 100:
+```bash
+samtools mpileup SAMEA2569438.chr10.sorted.bam | awk '$4 > 100 {count++} END {print count}'
+# Output: 51825
+
+## Exercise 4: Visual Exploration with IGV
+
+I used the Integrative Genomics Viewer (IGV) to visually validate the alignment of the reads against the reference genome and the provided annotations.
+
+### 4.1 - 4.4 Data Loading
+The following files were successfully loaded into the IGV Web interface:
+* **Reference:** `reference.fna`
+* **Annotations:** `annotation.gtf`
+* **Alignments:** `SAMEA2569438.chr10.sorted.bam` (with its index `.bai` file)
+
+### 4.5 Genomic Inspection at chr10:9,768,000-9,784,000
+
+I navigated to the specified locus on chromosome 10. Below is the screenshot of the visual evidence:
+
+![IGV Alignment Results](igv_screenshot.png)
+
+**Observations:**
+1.  **Read Mapping:** The grey horizontal bars represent individual reads. They align accurately with the blue blocks of the `annotation.gtf` track, confirming that the reads correspond to exons of the genes *Os10g0337500* and *Os10g0337600*.
+2.  **Coverage:** The coverage track at the top shows consistent sequencing depth across the exons, providing high confidence for subsequent analysis.
+3.  **Variant Detection:** Several vertical colored lines are visible within the grey reads. These indicate **mismatches** (SNPs) where the sample's nucleotide differs from the reference genome.
+4.  **Splicing Evidence:** Thin horizontal lines connecting read segments indicate spanning across introns, which is expected for RNA-seq data.
+
+### Exercise 5: Advanced Variant Analysis and Visualization
+
+I conducted a comparative analysis between the filtered VCF file and the IGV visualizations to characterize specific variants on chromosome 10.
+
+#### 5.5 INDEL Characterization (10:9,058,200-9,058,229)
+* **Coordinate:** chr10:9,058,212
+* **Alleles:** The reference allele is **G** and the alternative is **GTTT**, indicating a 3-base insertion.
+* **Zygosity:** The genotype is **0/1**, confirming that this position is **heterozygous** in the mapped sample.
+
+#### 5.6 SNP Depth (DP) Assessment (10:9,059,325-9,059,426)
+* **Observation:** I examined multiple SNPs in this region (e.g., at 9,059,328 and 9,059,335).
+* **Depth Analysis:** All SNPs in this window show a similar read depth (DP), ranging from **11 to 14**. This consistency indicates a high-quality alignment in this genomic segment.
+
+#### 5.7 Gene Model Intersection (10:10,000,166-10,000,226)
+* **Analysis:** I mapped the SNPs at positions 10,000,169 and 10,000,223 against the annotation track.
+* **Result:** Yes, these variants fall directly into a gene model, as they overlap with the annotated exonic features in the GTF track.
+
+
+
