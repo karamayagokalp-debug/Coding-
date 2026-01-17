@@ -169,7 +169,7 @@ A batch search for specific GO IDs was conducted to identify their respective fu
 ### 2. Data Observation
 The search results verify that **response to water deprivation** (GO:0009414) is a highly annotated process for this protein family, indicating its role in environmental stress adaptation.
 
-![QuickGO Search Interface](Gene%20Onthology.png)
+![QuickGO Search Interface](GeneOntology.png)
 
 ### 2. Hierarchy of the "Photosynthesis" Term
 The term **Photosynthesis** (GO:0015979) was analyzed for its ontological relationships:
