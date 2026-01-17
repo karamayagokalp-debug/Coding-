@@ -135,6 +135,11 @@ The protein sequence was analyzed using the **HHpred** server against **Pfam** a
 | **Predicted Structure**| AlphaFoldDB | **AT1G30330** | Full Length | Very High (pLDDT > 90) |
 
 
+### 2. Sequence Alignment Analysis
+The local alignment between the query and the template demonstrates high similarity in the N-terminal region, confirming the presence of the HD-ZIP signature.
+
+![HHpred Alignment Results](Allignments.png)
+
 #### 2. AlphaFoldDB Structural Verification
 To complement the remote homology search, the **AlphaFold Protein Structure Database** was used to retrieve the high-confidence predicted structure for the Arabidopsis protein.
 
@@ -160,6 +165,11 @@ A batch search for specific GO IDs was conducted to identify their respective fu
 | **GO:0009414** | response to water deprivation | Biological Process (P) |
 | **GO:0035618** | root hair | Cellular Component (C) |
 | **GO:0016491** | oxidoreductase activity | Molecular Function (F) |
+
+### 2. Data Observation
+The search results verify that **response to water deprivation** (GO:0009414) is a highly annotated process for this protein family, indicating its role in environmental stress adaptation.
+
+![QuickGO Search Interface](Gene%20Onthology.png)
 
 ### 2. Hierarchy of the "Photosynthesis" Term
 The term **Photosynthesis** (GO:0015979) was analyzed for its ontological relationships:
@@ -208,7 +218,7 @@ The reliability of the prediction is evaluated using the **pLDDT** score, where 
 | **Gene ID** | F1M20.36 | Consistent with Arabidopsis genome |
 | **Sequence Length** | 458 | Full-length structural prediction |
 | **Global Confidence** | High | Reliable for functional hypothesis |
-
+![AlphaFold Structural Statistics](AlphaFold.png)
 #### 3. Structural Observations and Conclusion
 * **Confidence Profile:** The average pLDDT of **85.88** indicates a very reliable model. According to the AlphaFold color scale, the core regions are likely in the "Very High" (blue) range (>90), while some flexible loops may fall into lower confidence categories.
 * **Domain Correlation:** The stable fold predicted here aligns with the **HD-ZIP** domain signatures identified in previous tasks (Exe 7-8).
