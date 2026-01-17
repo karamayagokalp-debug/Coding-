@@ -1,1 +1,53 @@
 
+# Session 3: Analysis of Transcriptomes - Co-expression Network Report
+
+## 1. Introduction
+This report details the construction of a gene co-expression network using the **Watered (W)** RNA-seq dataset. Using the **WGCNA** package in R, we identified functional modules of genes and correlated them with physiological plant traits.
+
+---
+
+## 2. Methodology & Workflow
+1. **Data Pre-processing:** Expression data from `TPM_counts_Drought_W_dataset.csv` was loaded and transposed.
+2. **Outlier Detection:** Hierarchical clustering was performed to identify and remove samples that significantly deviated from the dataset.
+3. **Network Construction:** A soft-thresholding power was selected to maintain scale-free topology.
+4. **Module Identification & Merging:** Genes were clustered into modules, and similar modules were merged based on an eigengene correlation threshold of 0.75.
+
+---
+
+## 3. Results (Exercise Answers)
+
+### 3.1) Dataset Dimensions
+* **Samples:** 39 samples.
+* **Isoforms:** 20,414 isoforms.
+
+### 3.2) Outlier Analysis
+* **Discarded Samples:** **1** sample was discarded.
+* **Reasoning:** Sample **`Adi10_W_02`** was identified as an outlier using the hierarchical clustering dendrogram with a height threshold of 300,000.
+
+### 3.3) Soft-Thresholding Power
+* **Power Value:** **6**
+* **Justification:** This power ensures a scale-free topology fit ($R^2$) above 0.85, which is ideal for biological networks.
+
+### 3.4) Module Merging
+* **Modules before merging:** 40 modules.
+* **Modules after merging:** 36 modules.
+
+### 3.5) Cyan Module Hub Gene
+* **Hub Isoform:** **Bradi5g01000.1**
+* **Method:** This was identified as the most highly connected transcript within the cyan module using the `chooseTopHubInEachModule` function.
+
+### 3.6) Module-Trait Association
+* **Highest Positive Correlation:** The **Violet module (MEviolet)**.
+* **Trait:** **blwgrd** (Below ground biomass).
+* **Correlation Value:** 0.66 (p-value = 3e-04).
+
+---
+
+## 4. Proposed Application
+The identification of the **Violet module** and its hub gene (**Bradi5g01000.1**) as key regulators of root biomass (**blwgrd**) provides a target for molecular breeding. These genetic markers can be used to select barley varieties with stronger root systems, improving water uptake and overall resilience in fluctuating environments.
+
+---
+
+## 5. Challenges Encountered
+* **Linux Environment:** Navigating the Docker container and locating tool-specific files (like Trimmomatic jars) required precise path management.
+* **Technical Troubleshooting:** Addressed "Permission Denied" and "File Not Found" errors by using absolute paths (`/home/vep/...`) instead of symbolic links.
