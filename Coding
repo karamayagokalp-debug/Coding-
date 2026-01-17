@@ -1,8 +1,7 @@
 # Session 1: Annotation of Coding Sequences
 
 **Date:** January 16, 2026  
-**Author:** Gokalpdev  
-**GitHub Repository:** [Link to your repo]
+**Author:** Gökalp Karamaya
 
 ## 1.1) Exercise Reports
 
@@ -27,9 +26,6 @@ To solve this exercise, I used the `makeblastdb` tool from the NCBI-BLAST+ suite
     $E = m \times n \times 2^{-S}$
     Where $n$ is the total number of residues in the database. As the number of sequences (database size) increases, the E-value for a specific alignment score also increases. This means that in a larger database, a match must have a higher similarity score to be considered statistically significant compared to a smaller database.
 
-
-
----
 
 ## 1.2) Problems Faced and Solutions
 
