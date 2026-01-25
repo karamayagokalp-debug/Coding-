@@ -1,4 +1,4 @@
-# Wheat Analysis Project - Course Results
+#Bioinformatic Assignmet
 
 This repository contains the complete analysis for Session 1, 3, and 5. Please click the links below to view the detailed reports:
 
