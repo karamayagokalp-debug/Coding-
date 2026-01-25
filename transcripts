@@ -1,7 +1,7 @@
 # WGCNA Analysis Report: Gene Co-expression in Brachypodium
 
 ## 1. Methodology
-To construct the gene co-expression network, we used the **WGCNA** package in R. The analysis was performed on RNAseq data from watered (W) samples of *Brachypodium distachyon*. 
+To construct the gene co-expression network, **WGCNA** package in R had been used. The analysis was performed on RNAseq data from watered (W) samples of *Brachypodium distachyon*. 
 * **Preprocessing:** Data was cleaned and filtered for high-quality expression.
 * **Network Construction:** A weighted adjacency matrix was built using a soft-thresholding power.
 * **Module Definition:** Clusters were identified using the Dynamic Tree Cut algorithm based on Topological Overlap (TOM).
@@ -51,6 +51,3 @@ According to the module-trait association heat map, the **Violet module** has th
 
 ---
 
-## 5. Proposed Experiment
-**Title:** Identifying Drought-Resilience Hub Genes in Turkish Barley Landraces.
-**Application:** This WGCNA pipeline can be applied to compare drought-tolerant vs. susceptible barley varieties. By identifying modules highly correlated with "Relative Water Content (RWC)", we could pinpoint hub genes that serve as biomarkers for breeding programs or targets for CRISPR-mediated yield improvement.
