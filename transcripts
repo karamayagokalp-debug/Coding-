@@ -1,119 +1,46 @@
+# WGCNA Analysis Report: Gene Co-expression in Brachypodium
 
-# Session 3: Analysis of Transcriptomes - Co-expression Network Report
-
-## 1. Introduction
-This report details the construction of a gene co-expression network using the **Watered (W)** RNA-seq dataset. Using the **WGCNA** package in R, we identified functional modules of genes and correlated them with physiological plant traits.
-
----
-
-## 2. Methodology & Workflow
-1. **Data Pre-processing:** Expression data from `TPM_counts_Drought_W_dataset.csv` was loaded and transposed.
-2. **Outlier Detection:** Hierarchical clustering was performed to identify and remove samples that significantly deviated from the dataset.
-3. **Network Construction:** A soft-thresholding power was selected to maintain scale-free topology.
-4. **Module Identification & Merging:** Genes were clustered into modules, and similar modules were merged based on an eigengene correlation threshold of 0.75.
-
----
-
-## 3. Results (Exercise Answers)
-
-### 3.1) Dataset Dimensions
-* **Samples:** 39 samples.
-* **Isoforms:** 20,414 isoforms.
-
-### 3.2) Outlier Analysis
-* **Discarded Samples:** **1** sample was discarded.
-* **Reasoning:** Sample **`Adi10_W_02`** was identified as an outlier using the hierarchical clustering dendrogram with a height threshold of 300,000.
-
-### 3.3) Soft-Thresholding Power
-* **Power Value:** **6**
-* **Justification:** This power ensures a scale-free topology fit ($R^2$) above 0.85, which is ideal for biological networks.
-
-### 3.4) Module Merging
-* **Modules before merging:** 40 modules.
-* **Modules after merging:** 36 modules.
-
-### 3.5) Cyan Module Hub Gene
-* **Hub Isoform:** **Bradi5g01000.1**
-* **Method:** This was identified as the most highly connected transcript within the cyan module using the `chooseTopHubInEachModule` function.
-
-### 3.6) Module-Trait Association
-* **Highest Positive Correlation:** The **Violet module (MEviolet)**.
-* **Trait:** **blwgrd** (Below ground biomass).
-* **Correlation Value:** 0.66 (p-value = 3e-04).
-
----
-
-## 4. Proposed Application
-The identification of the **Violet module** and its hub gene (**Bradi5g01000.1**) as key regulators of root biomass (**blwgrd**) provides a target for molecular breeding. These genetic markers can be used to select barley varieties with stronger root systems, improving water uptake and overall resilience in fluctuating environments.
-
----
-
-## 5. Challenges Encountered
-* **Linux Environment:** Navigating the Docker container and locating tool-specific files (like Trimmomatic jars) required precise path management.
-* **Technical Troubleshooting:** Addressed "Permission Denied" and "File Not Found" errors by using absolute paths (`/home/vep/...`) instead of symbolic links.
-
-.......
-
-
-
-# Session 3: Gene Co-expression Network Analysis in *Brachypodium*
-
-**Author:** [Senin Adın]
-**Date:** 17/01/2026
-**Description:** This project performs a WGCNA (Weighted Gene Co-expression Network Analysis) on RNA-seq data from Watered (W) samples to identify gene modules related to plant traits.
-
----
-
-## 1. Project Organization (Reproducible Practices)
-Following the guidelines from **Session R**, this project is organized to ensure transparency and reproducibility:
-* **Data:** Raw expression matrices (`TPM_counts_Drought_W_dataset.csv`) and trait data (`TRAITS_W.csv`) are stored in the data directory.
-* **Scripts:** The analysis is performed using RMarkdown (`Practical_WGCNA_W_dataset.Rmd`) to integrate code, documentation, and results.
-* **Version Control:** Git is used to track modifications and host the project on GitHub.
-
----
-
-## 2. Analysis Pipeline & Methodology
-
-### 2.1. Data Pre-processing
-* **Input Dimensions:** The dataset contains **20,414 isoforms** and **39 samples**.
-* **Outlier Detection:** Hierarchical clustering was performed. Sample **`Adi10_W_02`** was identified as an outlier (threshold > 300,000) and removed to improve network quality.
-
-### 2.2. Network Construction
-* **Soft-Thresholding Power:** A power of **6** was selected. This choice was based on achieving a Scale-free Topology Fit index ($R^2$) above 0.85, as recommended by the WGCNA protocol.
-
-
-
-### 2.3. Module Identification
-* **Merging:** Initially, 40 modules were identified. Using a correlation threshold of 0.75 for eigengenes, similar modules were merged, resulting in a final set of **36 modules**.
-
----
-
-## 3. Results & Biological Interpretation
-
-### 3.1. Hub Gene Discovery
-The most highly connected gene (Hub Gene) in the **Cyan module** was identified as:
-* **Hub Isoform:** `Bradi5g01000.1`
-
-### 3.2. Module-Trait Relationship
-The analysis correlated gene modules with physiological traits. The most significant finding:
-* **Module:** **Violet (MEviolet)**
-* **Trait:** **blwgrd** (Below ground biomass)
-* **Correlation:** 0.66 ($p$-value = 3e-04)
+## 1. Methodology: How the Analysis was Performed
+To construct the gene co-expression network, we employed the **WGCNA** package in R. The process involved:
+* **Data Preprocessing:** Cleaning the `TPM_counts_Drought_W_dataset.csv` and transposing it for compatibility.
+* **Network Construction:** Calculating a weighted adjacency matrix using a soft-thresholding power.
+* **Module Identification:** Identifying clusters of highly correlated isoforms using the Dynamic Tree Cut algorithm based on Topological Overlap (TOM).
+* **Trait Correlation:** Calculating Pearson correlations between module eigengenes and phenotypic traits.
 
 
 
 ---
 
-## 4. Discussion & Application
-Identifying the **Violet module** as a key driver for root biomass allows for targeted molecular breeding. The hub genes within this module can serve as biomarkers for developing drought-resilient *Brachypodium* varieties by selecting for enhanced below-ground development.
+## 2. Main Specific Inputs and Outputs
+| Analysis Step | Main Input File | Main Output / Result |
+| :--- | :--- | :--- |
+| **Expression Input** | `TPM_counts_Drought_W_dataset.csv` | Cleaned expression matrix |
+| **QC & Outliers** | Transposed Matrix | `sampleClustering.pdf` |
+| **Network Scaling** | Expression Data | Scale-free Topology Fit Plots |
+| **Module Definition** | TOM Matrix | `net_W.RData` and Cluster Dendrogram |
+| **Trait Association** | `Traits_Drought_W_dataset.csv` | `heatmap_traits_modules_W.pdf` |
 
 ---
 
-## 5. Computational Environment
-* **Language:** R (version 4.x)
-* **Key Packages:** `WGCNA`, `rmarkdown`, `ggplot2`
-* **Workflow Management:** Analysis initiated via Docker container for environment consistency.
+## 3. Results (Exercise Solutions)
+* **3.1 Samples & Isoforms:** 18 samples and 34,492 isoforms were processed.
+* **3.2 Outliers:** **1 sample** (`Adi10_W_02`) was discarded after outlier analysis.
+* **3.3 Power Value:** A soft-thresholding power of **6** was chosen for adjacency calculation.
+* **3.4 Module Merging:** **40 modules** were found initially; **36 modules** remained after merging (cut height 0.25).
+* **3.5 Cyan Module Hub:** The hub isoform for the Cyan module is **Bradi5g01000.1**.
+* **3.6 Trait Correlation:** The **Violet module** shows the highest positive correlation (**0.66**, p=3e-04) with the **"blwgrd"** (below ground biomass) trait.
+
+
 
 ---
-*This report was generated as part of the Bioinformatics course requirements.*
 
+## 4. Problems Encountered
+The analysis faced significant technical challenges regarding the R environment:
+* **Dependency Issues:** The required `GO.db` package failed to install from source due to local configuration limits. This was bypassed by installing the **binary version** through BiocManager.
+* **Path Length & Encoding:** Windows file path limitations and localized characters in the user path caused directory access errors. Moving the project to a root directory (`D:/Proje`) and setting the path manually solved these issues.
+
+---
+
+## 5. Proposed Experiment
+**Title:** Transcriptomic Response to Salt Stress in Wheat Varieties.
+**Proposed Setup:** Using this WGCNA pipeline, we could analyze wheat exposed to saline vs. non-saline conditions. Identifying modules correlated with "Na+ exclusion" or "yield stability" would reveal hub genes that could be targeted via CRISPR-Cas9 to develop salt-tolerant crops.
