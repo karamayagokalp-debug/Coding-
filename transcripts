@@ -41,7 +41,7 @@ According to the module membership data, the hub isoform for the **cyan** module
 
 **3.6) Trait Correlation:**
 According to the module-trait association heat map, the **Violet module** has the highest positive correlation (**0.66**, $p=3 \times 10^{-4}$) with the **"blwgrd"** (below ground biomass) trait.
-![Module-Trait Relationship Heatmap](heatmap_traits_modules_W.pdf)
+![Module-Trait Relationship Heatmap](heatmap.png)
 ---
 
 ## 4. Problems Encountered
