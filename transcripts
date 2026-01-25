@@ -30,16 +30,18 @@ The dataset `TPM_counts_Drought_W_dataset.csv` included **26 samples** and **9,9
 
 **3.3) Power Value:**
 A soft-thresholding power value of **6** was set as appropriate, as it was the lowest power reaching a Scale-Free Topology Fit ($R^2$) above 0.80 (specifically 0.879).
+![Scale-free Topology Power Selection](power_plots.png)
 
 **3.4) Module Merging:**
 Initially, **35+ modules** were established. After the merging process (using a cut height of 0.25), the modules were refined into a final set of consolidated color-coded groups.
+![Gene Dendrogram and Modules](merged_modules.png)
 
 **3.5) Cyan Module Hub:**
 According to the module membership data, the hub isoform for the **cyan** module is **Bradi1g00700.3**.
 
 **3.6) Trait Correlation:**
 According to the module-trait association heat map, the **Violet module** has the highest positive correlation (**0.66**, $p=3 \times 10^{-4}$) with the **"blwgrd"** (below ground biomass) trait.
-
+![Module-Trait Relationship Heatmap](heatmap.png)
 ---
 
 ## 4. Problems Encountered
