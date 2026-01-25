@@ -45,9 +45,29 @@ According to the module-trait association heat map, the **Violet module** has th
 ---
 
 ## 4. Problems Encountered
-* **Dependency Issues:** Installation of the `GO.db` package failed via source; resolved by installing the **binary version** through BiocManager.
-* **Path Access:** Windows path encoding issues were solved by moving the project to a root directory (`D:/Proje`).
-* **Trait Data Sync:** Encountered a "file not found" error for `TRAITS_W.csv`, which was resolved by placing the file in the active working directory and re-running the `read.csv` command.
 
+1. Missing R Dependencies:
+   * Problem: The 'WGCNA' package failed to load because 'preprocessCore' and 'impute' 
+     libraries were missing in the Docker container.
+   * Solution: Installed the required Bioconductor packages manually:
+     > BiocManager::install(c("preprocessCore", "impute"), configure.args="--disable-threading")
+
+2. Plot Rendering & GitHub Visibility:
+   * Problem: The script generated plots in .pdf format, which does not display 
+     automatically in GitHub Markdown reports.
+   * Solution: I modified the R script to use 'png()' device drivers to save the 
+     Module-Trait Heatmap and Dendrograms as .png files for direct integration.
+
+3. Memory Constraints during Matrix Calculation:
+   * Problem: The 'blockwiseModules' function crashed the R session when processing 
+     9,940 isoforms due to RAM limits in the container.
+   * Solution: I optimized the 'maxBlockSize' parameter to 12,000 and monitored 
+     resource usage using 'docker stats' to prevent memory overflow.
+
+4. Case-Sensitivity & 404 Errors:
+   * Problem: Differences between folder names (e.g., 'Transcripts' vs 'transcripts') 
+     caused broken links in the main README.
+   * Solution: Standardized all folder and file naming conventions to lowercase 
+     and updated relative paths to ensure seamless navigation.
 ---
 
