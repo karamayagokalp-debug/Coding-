@@ -69,5 +69,23 @@ According to the module-trait association heat map, the **Violet module** has th
      caused broken links in the main README.
    * Solution: Standardized all folder and file naming conventions to lowercase 
      and updated relative paths to ensure seamless navigation.
----
+--
+
+1. WGCNA Official Documentation:
+   * Langfelder P, Horvath S (2008). "WGCNA: an R package for weighted 
+     correlation network analysis." BMC Bioinformatics.
+   * URL: https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/
+
+2. Course Materials (Zaragoza 2025):
+   * Session 3: Co-expression Network Analysis (WGCNA) Practical Guide.
+   * Dataset: TPM_counts_Drought_W_dataset.csv (Wheat Transcriptome).
+
+3. Software & Tools:
+   * R version 4.x (via Docker Container)
+   * Bioconductor (preprocessCore, GO.db, AnnotationDbi)
+   * GitHub for Project Version Control and Reporting
+
+4. Biological Context:
+   * GET_HOMOLOGUES-EST protocol for wheat pangenome and 
+     transcriptome comparisons.
 
